@@ -1,0 +1,36 @@
+{
+  "name": "scrawl",
+  "version": "1.0.0",
+  "description": "Express API that powers scrawl",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zpenka/scrawl.git"
+  },
+  "keywords": [
+    "scrawl",
+    "notes",
+    "live",
+    "comments"
+  ],
+  "author": "Zack Penka",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/zpenka/scrawl/issues"
+  },
+  "homepage": "https://github.com/zpenka/scrawl#readme",
+  "dependencies": {
+    "body-parser": "^1.15.1",
+    "bunyan": "^1.8.1",
+    "express": "^4.13.4",
+    "knex": "^0.11.1"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^2.4.5",
+    "sinon": "^1.17.4"
+  }
+}

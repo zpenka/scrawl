@@ -2,8 +2,9 @@
   "name": "scrawl",
   "version": "1.0.0",
   "description": "Express API that powers scrawl",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
+    "start": "node bin/www",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -21,15 +22,19 @@
   "bugs": {
     "url": "https://github.com/zpenka/scrawl/issues"
   },
-  "homepage": "https://github.com/zpenka/scrawl#readme",
+  "homepage": "scrawl.ninja",
   "dependencies": {
+    "bluebird": "^3.3.5",
     "body-parser": "^1.15.1",
     "bunyan": "^1.8.1",
     "express": "^4.13.4",
-    "knex": "^0.11.1"
+    "knex": "^0.11.1",
+    "mysql": "^2.10.2",
+    "mysql2": "^1.0.0-rc.1"
   },
   "devDependencies": {
     "chai": "^3.5.0",
+    "chai-http": "^2.0.1",
     "mocha": "^2.4.5",
     "sinon": "^1.17.4"
   }

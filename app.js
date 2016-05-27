@@ -21,10 +21,11 @@ app.use((req, res, next) => {
 
 // Don't leak stacktraces to production
 app.use((err, req, res, next) => {
+  console.log('err', err);
   res.status(err.status || 500);
   res.json({
     message: err.message,
-    error: app.get('env') === 'production' ? {} : err,
+    error: process.env.NODE_ENV === 'production' ? {} : err,
   });
 });
 

@@ -5,7 +5,8 @@
   "main": "app.js",
   "scripts": {
     "start": "node bin/www",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha .",
+    "watch": "mocha -w --check-leaks"
   },
   "repository": {
     "type": "git",

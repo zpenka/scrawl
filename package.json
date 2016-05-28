@@ -5,8 +5,8 @@
   "main": "app.js",
   "scripts": {
     "start": "node bin/www",
-    "test": "mocha .",
-    "watch": "MUTE_LOGS=1 mocha -w --check-leaks"
+    "test": "NODE_ENV=test MUTE_LOGS=1 mocha .",
+    "watch": "NODE_ENV=test MUTE_LOGS=1 mocha -w --check-leaks"
   },
   "repository": {
     "type": "git",

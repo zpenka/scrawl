@@ -2,12 +2,9 @@ const chai = require('chai');
 const expect = chai.expect;
 const request = require('supertest');
 const app = require('../app');
+const db = require('../db/knex');
 
 describe('app', function() {
-  beforeEach(function() {
-    process.env.NODE_ENV = 'test';
-  });
-
   context('When an unknown request is made', function() {
 
     it('returns a 404', function(done) {

@@ -1,5 +1,6 @@
 const db = require('../db/knex');
 const chai = require('chai');
+const expect = chai.expect;
 const sinon = require('sinon');
 const Promise = require('bluebird');
 const _ = require('lodash');

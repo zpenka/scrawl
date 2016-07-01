@@ -1,6 +1,6 @@
-const chai = require('chai');
-const expect = chai.expect;
+const expect = require('chai').expect;
 const request = require('supertest');
+const helper = require('./helper');
 const app = require('../app');
 const db = require('../db/knex');
 

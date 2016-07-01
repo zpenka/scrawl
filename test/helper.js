@@ -18,13 +18,13 @@ function clearTables(done) {
     return db(table_name).del();
   })
   .then(() => done())
-	.catch((err) => done(err));
+  .catch((err) => done(err));
 }
 
 before(function(done) {
-	db.migrate.latest()
-	.then(() => done())
-	.catch((err) => done(err));
+  db.migrate.latest()
+  .then(() => done())
+  .catch((err) => done(err));
 });
 
 
@@ -43,16 +43,16 @@ beforeEach(function(done) {
   }
 
   db.raw('SHOW TABLES')
-		.then((result) => {
+  .then((result) => {
 
-      const all_tables  = result[0].map(function(table_data) {
-				const key = Object.keys(table_data)[0];
-				return table_data[key];
-			});
+    const all_tables  = result[0].map(function(table_data) {
+      const key = Object.keys(table_data)[0];
+      return table_data[key];
+    });
 
-      tables_to_clear = _.without(all_tables, 'knex_migrations');
-      return clearTables(done);
-    })
-		.catch((err) => done(err));
+    tables_to_clear = _.without(all_tables, 'knex_migrations');
+    return clearTables(done);
+  })
+  .catch((err) => done(err));
 });
 

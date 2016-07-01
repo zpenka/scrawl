@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node bin/www",
     "test": "NODE_ENV=test MUTE_LOGS=1 mocha -r app.js -t 1000 --check-leaks",
-    "watch": "NODE_ENV=test MUTE_LOGS=1 mocha -r app.js -w -t 1000 --check-leaks"
+    "watch": "nodemon --exec npm test"
   },
   "repository": {
     "type": "git",

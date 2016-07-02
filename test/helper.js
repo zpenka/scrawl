@@ -23,6 +23,8 @@ function clearTables(done) {
 }
 
 before(function(done) {
+  process.env.NODE_ENV = 'test';
+
   db.migrate.latest()
   .then(() => done())
   .catch((err) => done(err));

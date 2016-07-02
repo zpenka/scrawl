@@ -4,7 +4,26 @@ const helper = require('./helper');
 const app = require('../app');
 const db = require('../db/knex');
 
-describe.skip('routes/notes', function() {
+describe('routes/notes', function() {
+  const date = Date.now();
+  let note = {};
+
+  beforeEach(function(done) {
+    const row = {
+      date_created: date,
+      date_updated: date,
+      message: 'fake-message 1',
+      liked: 0,
+    };
+
+    return db('notes').insert(row)
+    .then(() => db.select().from('notes'))
+    .then((results) => {
+      note = results[0];
+      return done();
+    });
+  });
+
   describe('GET /notes', function() {
     const url = '/api/v1/notes';
 
@@ -12,9 +31,6 @@ describe.skip('routes/notes', function() {
 
       context('with no parameters', function() {
         it('fetches all notes', function(done) {
-          console.log('url', url);
-          console.log('app', app);
-
           request(app)
           .get(url)
           .expect(202)
@@ -22,27 +38,29 @@ describe.skip('routes/notes', function() {
             expect(err).to.not.exist;
             expect(res).to.be.json;
 
-            expect(true).to.be.false;
+            expect(res.body).to.deep.equal(note);
 
-            done();
+            return done();
           });
 
         });
       });
 
       context('with bad parameters', function() {
+        const bad_url = url + '?lols=123';
+
         it('returns a 401', function(done) {
           request(app)
-          .get(url + '?lols=123')
+          .get(bad_url)
           .end(function(err, res) {
             expect(err).to.not.exist;
             expect(res).to.be.json;
 
-            expect(res.body.error).to.deep.equal({
-              message: 'Bad parameter passed',
+            expect(res.body).to.deep.equal({
+              message: `No parameters should be passed to the url ${bad_url}`,
             });
 
-            done();
+            return done();
           });
         });
       });

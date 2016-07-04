@@ -30,8 +30,6 @@ before(function(done) {
   .catch((err) => done(err));
 });
 
-
-
 beforeEach(function(done) {
   process.env.NODE_ENV = 'test';
 
@@ -58,4 +56,11 @@ beforeEach(function(done) {
   })
   .catch((err) => done(err));
 });
+
+module.exports.insertFixtures = (table_name, data) => {
+  return db(table_name).insert(data)
+  .then(() => db.select().from(table_name))
+  .then((results) => results[0])
+  .catch((err) => console.log('err', err));
+}
 

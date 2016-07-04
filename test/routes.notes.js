@@ -16,10 +16,9 @@ describe('routes/notes', function() {
       liked: 0,
     };
 
-    return db('notes').insert(row)
-    .then(() => db.select().from('notes'))
-    .then((results) => {
-      note = results[0];
+    return helper.insertFixtures('notes', row)
+    .then((result) => {
+      note = result;
       return done();
     });
   });

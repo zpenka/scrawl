@@ -38,7 +38,5 @@ describe('app', function() {
         });
       });
     });
-
   });
-
 });

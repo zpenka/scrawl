@@ -41,7 +41,6 @@ describe('routes/notes', function() {
 
             return done();
           });
-
         });
       });
 
@@ -63,8 +62,6 @@ describe('routes/notes', function() {
           });
         });
       });
-
     });
   });
-
 });

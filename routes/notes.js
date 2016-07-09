@@ -22,6 +22,43 @@ router.get('/api/v1/notes', (req, res, next) => {
   .catch((err) => next(err));
 });
 
+router.post('/api/v1/notes', (req, res, next) => {
+  if (!_.isEmpty(req.query)) {
+    return res
+    .status(401)
+    .json({ message: `No parameters should be passed to the url ${req.url}` });
+  }
+
+  if (!req.body.message) {
+    return res
+    .status(400)
+    .json({ message: 'POST body is missing required field "message"' });
+  }
+
+  const message = req.body.message;
+  const liked = false;
+
+  return db('notes')
+  .insert({
+    message,
+    liked,
+  })
+  .then((rows) => {
+    const id = rows[0];
+
+    return db('notes')
+    .where('id', id)
+    .then((rows) => {
+      const note = rows[0];
+
+      return res
+      .status(202)
+      .json(note);
+    });
+  })
+  .catch((err) => next(err));
+});
+
 router.get('/api/v1/notes/:note', (req, res, next) => {
   if (!_.isEmpty(req.query)) {
     return res
@@ -47,20 +84,5 @@ router.get('/api/v1/notes/:note', (req, res, next) => {
     .json(result);
   })
   .catch((err) => next(err));
-});
-
-router.post('/api/v1/notes/:note', (req, res, next) => {
-  if (!_.isEmpty(req.query)) {
-    return res
-    .status(401)
-    .json({ message: `No parameters should be passed to the url ${req.url}` });
-  }
-
-  const note_id = req.params.note;
-  const note = req.body;
-
-  return res
-  .status(202)
-  .json({});
 });
 

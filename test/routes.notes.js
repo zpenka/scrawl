@@ -3,6 +3,7 @@ const request = require('supertest');
 const helper = require('./helper');
 const app = require('../app');
 const db = require('../db/knex');
+const moment = require('moment');
 
 describe('routes/notes', function() {
   describe('GET /notes', function() {
@@ -143,45 +144,47 @@ describe('routes/notes', function() {
     });
   });
 
-  describe.skip('POST /notes/:note', function() {
-    const base_url = '/api/v1/notes/';
-    let note_id = 0;
-    let body = {};
+  describe('POST /notes', function() {
+    const url = '/api/v1/notes';
+    const body = { message: 'fake-message' };
 
     context('when the new note is valid', function() {
-      beforeEach(function() {
-        const rows = helper.generateNotesRows(1);
-        body = rows[0];
-        note_id = body.id;
-      });
-
       it('creates and returns the note', function(done) {
-        const url = base_url + note_id;
+        const now = moment().milliseconds(0).toISOString();
 
         request(app)
-        .get(url)
+        .post(url)
+        .send(body)
         .expect(202)
         .end(function(err, res) {
           expect(err).to.not.exist;
           expect(res).to.be.json;
 
-          expect(res.body.length).to.equal(1);
-          expect(res.body).to.deep.equal(note);
+          expect(res.body.message).to.equal(body.message);
+          expect(res.body.liked).to.equal(0);
+          helper.checkTimes(res.body.date_created, now);
+          helper.checkTimes(res.body.date_updated, now);
 
           return done();
         });
       });
     });
 
-    context('when the new note is not valid', function() {
+    context('when the new note is missing a message field', function() {
       it('does not create anything', function(done) {
-        return done();
-      });
-    });
+        const body = {};
 
-    context('when the new note already exists', function() {
-      it('does not create anything', function(done) {
-        return done();
+        request(app)
+        .post(url)
+        .send(body)
+        .expect(400)
+        .end(function(err, res) {
+          expect(err).to.not.exist;
+          expect(res).to.be.json;
+
+          expect(res.body.message).to.equal('POST body is missing required field "message"');
+          return done();
+        });
       });
     });
   });

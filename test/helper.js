@@ -82,3 +82,12 @@ module.exports.generateNotesRows = (num_rows) => {
   return rows;
 }
 
+module.exports.checkTimes = (t1, t2) => {
+  const first = parseInt(t1, 10);
+  const second = parseInt(t2, 10);
+
+  const diff = first - second;
+
+  return expect(diff).to.be.below(2);
+}
+

@@ -9,7 +9,7 @@ module.exports = {
       charset: 'utf8'
     },
     migrations: {
-      directory: __dirname + '/db/migrations'
+      directory: __dirname + '/migrations'
     },
     seeds: {
       directory: __dirname + '/db/seeds/default'
@@ -25,7 +25,7 @@ module.exports = {
       charset: 'utf8'
     },
     migrations: {
-      directory: __dirname + '/db/migrations'
+      directory: __dirname + '/migrations'
     },
     seeds: {
       directory: __dirname + '/db/seeds/default'
@@ -36,7 +36,7 @@ module.exports = {
     pool: { min: 1, max: 7 },
     connection: process.env.DATABASE_URL,
     migrations: {
-      directory: __dirname + '/db/migrations'
+      directory: __dirname + '/migrations'
     },
     seeds: {
       directory: __dirname + '/db/seeds/production'

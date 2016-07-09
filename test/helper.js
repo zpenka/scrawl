@@ -57,10 +57,28 @@ beforeEach(function(done) {
   .catch((err) => done(err));
 });
 
-module.exports.insertFixtures = (table_name, data) => {
-  return db(table_name).insert(data)
-  .then(() => db.select().from(table_name))
-  .then((results) => results[0])
+module.exports.insertFixtures = (table_name, data, chunk_size = 1000) => {
+  return db
+  .batchInsert(table_name, data, chunk_size)
+  .then(() => db.select().orderBy('id', 'desc').from(table_name))
+  .then((results) => results)
   .catch((err) => console.log('err', err));
+}
+
+module.exports.generateNotesRows = (num_rows) => {
+  const date = Date.now();
+  let rows = [];
+  let i = 0;
+
+  for (i; i <= num_rows; i++) {
+    rows.push({
+      date_created: date,
+      date_updated: date,
+      message: `fake-message ${i}`,
+      liked: 0,
+    });
+  }
+
+  return rows;
 }
 

@@ -72,12 +72,69 @@ describe('routes/notes', function() {
       it('returns a 401', function(done) {
         request(app)
         .get(bad_url)
+        .expect(401)
         .end(function(err, res) {
           expect(err).to.not.exist;
           expect(res).to.be.json;
 
           expect(res.body).to.deep.equal({
             message: `No parameters should be passed to the url ${bad_url}`,
+          });
+
+          return done();
+        });
+      });
+    });
+  });
+
+  describe('GET /notes/:note', function() {
+    const base_url = '/api/v1/notes/';
+    let note_id = 0;
+    let note = {};
+
+    context('when the requested note exists', function() {
+      beforeEach(function(done) {
+        const row = helper.generateNotesRows(1);
+
+        return helper.insertFixtures('notes', row)
+        .then((result) => {
+          note = result;
+          note_id = note[0].id;
+          return done();
+        });
+      });
+
+      it('returns the note', function(done) {
+        const url = base_url + note_id;
+
+        request(app)
+        .get(url)
+        .expect(202)
+        .end(function(err, res) {
+          expect(err).to.not.exist;
+          expect(res).to.be.json;
+
+          expect(res.body.length).to.equal(1);
+          expect(res.body).to.deep.equal(note);
+
+          return done();
+        });
+      });
+    });
+
+    context('when the request note does not exist', function() {
+      it('yields an error message', function(done) {
+        const url = base_url + note_id;
+
+        request(app)
+        .get(url)
+        .expect(401)
+        .end(function(err, res) {
+          expect(err).to.not.exist;
+          expect(res).to.be.json;
+
+          expect(res.body).to.deep.equal({
+            message: `Note with id ${note_id} not found`,
           });
 
           return done();

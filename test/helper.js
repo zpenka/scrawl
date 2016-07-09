@@ -70,7 +70,7 @@ module.exports.generateNotesRows = (num_rows) => {
   let rows = [];
   let i = 0;
 
-  for (i; i <= num_rows; i++) {
+  for (i; i < num_rows; i++) {
     rows.push({
       date_created: date,
       date_updated: date,

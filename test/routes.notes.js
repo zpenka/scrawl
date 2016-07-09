@@ -13,9 +13,9 @@ describe('routes/notes', function() {
       let note = {};
 
       beforeEach(function(done) {
-        const row = helper.generateNotesRows(1);
+        const rows = helper.generateNotesRows(1);
 
-        return helper.insertFixtures('notes', row)
+        return helper.insertFixtures('notes', rows)
         .then((result) => {
           note = result;
           return done();
@@ -94,11 +94,11 @@ describe('routes/notes', function() {
 
     context('when the requested note exists', function() {
       beforeEach(function(done) {
-        const row = helper.generateNotesRows(1);
+        const rows = helper.generateNotesRows(1);
 
-        return helper.insertFixtures('notes', row)
-        .then((result) => {
-          note = result;
+        return helper.insertFixtures('notes', rows)
+        .then((result_rows) => {
+          note = result_rows;
           note_id = note[0].id;
           return done();
         });
@@ -128,7 +128,7 @@ describe('routes/notes', function() {
 
         request(app)
         .get(url)
-        .expect(401)
+        .expect(404)
         .end(function(err, res) {
           expect(err).to.not.exist;
           expect(res).to.be.json;
@@ -139,6 +139,49 @@ describe('routes/notes', function() {
 
           return done();
         });
+      });
+    });
+  });
+
+  describe.skip('POST /notes/:note', function() {
+    const base_url = '/api/v1/notes/';
+    let note_id = 0;
+    let body = {};
+
+    context('when the new note is valid', function() {
+      beforeEach(function() {
+        const rows = helper.generateNotesRows(1);
+        body = rows[0];
+        note_id = body.id;
+      });
+
+      it('creates and returns the note', function(done) {
+        const url = base_url + note_id;
+
+        request(app)
+        .get(url)
+        .expect(202)
+        .end(function(err, res) {
+          expect(err).to.not.exist;
+          expect(res).to.be.json;
+
+          expect(res.body.length).to.equal(1);
+          expect(res.body).to.deep.equal(note);
+
+          return done();
+        });
+      });
+    });
+
+    context('when the new note is not valid', function() {
+      it('does not create anything', function(done) {
+        return done();
+      });
+    });
+
+    context('when the new note already exists', function() {
+      it('does not create anything', function(done) {
+        return done();
       });
     });
   });

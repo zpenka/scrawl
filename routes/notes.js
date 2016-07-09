@@ -38,7 +38,7 @@ router.get('/api/v1/notes/:note', (req, res, next) => {
   .then((result) => {
     if (result.length === 0) {
       return res
-      .status(401)
+      .status(404)
       .json({ message: `Note with id ${note_id} not found` });
     }
 
@@ -48,3 +48,19 @@ router.get('/api/v1/notes/:note', (req, res, next) => {
   })
   .catch((err) => next(err));
 });
+
+router.post('/api/v1/notes/:note', (req, res, next) => {
+  if (!_.isEmpty(req.query)) {
+    return res
+    .status(401)
+    .json({ message: `No parameters should be passed to the url ${req.url}` });
+  }
+
+  const note_id = req.params.note;
+  const note = req.body;
+
+  return res
+  .status(202)
+  .json({});
+});
+

@@ -46,7 +46,7 @@ beforeEach(function(done) {
   db.raw('SHOW TABLES')
   .then((result) => {
 
-    const all_tables  = result[0].map(function(table_data) {
+    const all_tables = result[0].map(function(table_data) {
       const key = Object.keys(table_data)[0];
       return table_data[key];
     });

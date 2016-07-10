@@ -10,3 +10,9 @@
 * DELETE /notes/:note deletes a note
 
 * update test helper to have fixture method for less boilerplate
+
+2
+
+* Able to like and un-like notes
+  * Add /notes/:note/like route which toggles 'liked' status of a note
+  * Add ability to update like status on PUT /notes/:note route

@@ -5,8 +5,35 @@ const app = require('../app');
 const db = require('../db/knex');
 
 describe('app', function() {
-  context('When an unknown request is made', function() {
+  context('when a valid request is made', function() {
+    let note = {};
 
+    beforeEach(function(done) {
+      const rows = helper.generateNotesRows(1);
+
+      return helper.insertFixtures('notes', rows)
+      .then((result) => {
+        note = result;
+        return done();
+      });
+    });
+
+    it('responds correctly', function(done) {
+      request(app)
+      .get('/api/v1/notes')
+      .expect(202)
+      .end(function(err, res) {
+        expect(err).to.not.exist;
+        expect(res).to.be.json;
+
+        expect(res.body).to.deep.equal(note);
+
+        return done();
+      });
+    });
+  });
+
+  context('when an unknown request is made', function() {
     it('returns a 404', function(done) {
       request(app)
       .get('/wat')
@@ -14,10 +41,11 @@ describe('app', function() {
       .end(function(err, res) {
         expect(err).to.not.exist;
         expect(res).to.be.json;
+
         expect(res.body.message).to.equal('Not Found');
         expect(res.body.error).to.not.deep.equal({});
 
-        done();
+        return done();
       });
     });
 
@@ -32,9 +60,10 @@ describe('app', function() {
         .end(function(err, res) {
           expect(err).to.not.exist;
           expect(res).to.be.json;
+
           expect(res.body.error).to.deep.equal({});
 
-          done();
+          return done();
         });
       });
     });

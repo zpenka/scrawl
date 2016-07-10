@@ -152,3 +152,47 @@ router.delete('/api/v1/notes/:note', (req, res, next) => {
   });
 });
 
+router.put('/api/v1/notes/:note/liked', (req, res, next) => {
+  if (!_.isEmpty(req.query)) {
+    return res
+    .status(401)
+    .json({ message: `No parameters should be passed to the url ${req.url}` });
+  }
+
+  const note_id = req.params.note;
+
+  return db
+  .select()
+  .from('notes')
+  .where('id', note_id)
+  .then((rows) => {
+    if (rows.length === 0) {
+      return res
+      .status(404)
+      .json({ message: 'ERROR: Message not found' });
+    }
+
+    const note = rows[0];
+    const liked = note.liked === 0 ? 1 : 0;
+
+    return db('notes')
+    .where('id', note_id)
+    .update({ liked })
+    .then((num_rows_updated) => {
+      if (num_rows_updated < 1) {
+        return res
+        .status(503)
+        .json({ message: 'ERROR: Failed to updated note' });
+      }
+
+      const new_note = note;
+      new_note.liked = liked;
+
+      return res
+      .status(202)
+      .json(new_note);
+    });
+  })
+  .catch((err) => next(err));
+});
+

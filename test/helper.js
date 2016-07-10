@@ -34,11 +34,8 @@ before(function(done) {
 beforeEach(function(done) {
   process.env.NODE_ENV = 'test';
 
-  if (this.sinon) {
-    this.sinon.restore();
-  } else {
-    this.sinon = sinon.sandbox.create();
-  }
+  // Reset sinon between each test
+  this.sinon ? this.sinon.restore() : this.sinon = sinon.sandbox.create();
 
   if (tables_to_clear) {
     return clearTables(done);
@@ -46,7 +43,6 @@ beforeEach(function(done) {
 
   db.raw('SHOW TABLES')
   .then((result) => {
-
     const all_tables = result[0].map(function(table_data) {
       const key = Object.keys(table_data)[0];
       return table_data[key];

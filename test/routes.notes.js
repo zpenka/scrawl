@@ -336,5 +336,65 @@ describe('routes/notes', function() {
       });
     });
   });
+
+  describe('PUT /notes/:note/liked', function() {
+    const base_url = '/api/v1/notes';
+
+    context('when the note exists', function() {
+      let note = {};
+      let note_id = 0;
+      let url = '';
+
+      beforeEach(function(done) {
+        const rows = helper.generateNotesRows(1);
+
+        return helper.insertFixtures('notes', rows)
+        .then((result) => {
+          note = result;
+          note_id = note[0].id;
+          url = `${base_url}/${note_id}/liked`;
+
+          return done();
+        });
+      });
+
+      it('toggles the liked status of the note', function(done) {
+        const expected_note = note[0];
+        expected_note.liked = 1;
+
+        request(app)
+        .put(url)
+        .expect(202)
+        .end(function(err, res) {
+          expect(err).to.not.exist;
+          expect(res).to.be.json;
+
+          expect(res.body).to.deep.equal(expected_note);
+
+          return done();
+        });
+      });
+    });
+
+    context('when the note does not exist', function() {
+      const url = `${base_url}/2/liked`;
+
+      it('returns an error message', function(done) {
+        request(app)
+        .put(url)
+        .expect(404)
+        .end(function(err, res) {
+          expect(err).to.not.exist;
+          expect(res).to.be.json;
+
+          expect(res.body).to.deep.equal({
+            message: 'ERROR: Message not found',
+          });
+
+          return done();
+        });
+      });
+    });
+  });
 });
 

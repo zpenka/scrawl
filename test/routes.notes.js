@@ -254,6 +254,35 @@ describe('routes/notes', function() {
           });
         });
       });
+
+      context('and the request body contains a like toggle', function() {
+        it('toggles the liked status of the note', function(done) {
+          const now = moment().milliseconds(0).toISOString();
+          const body = {
+            message: 'fake-new message',
+            liked: 1,
+          };
+          const expected_note = note[0];
+          expected_note.message = body.message;
+          expected_note.liked = body.liked;
+
+          request(app)
+          .put(url)
+          .send(body)
+          .expect(202)
+          .end(function(err, res) {
+            expect(err).to.not.exist;
+            expect(res).to.be.json;
+
+            expect(res.body.message).to.equal(expected_note.message);
+            expect(res.body.liked).to.equal(expected_note.liked);
+            expect(res.body.date_created).to.equal(expected_note.date_created);
+            helper.checkTimes(res.body.date_updated, now);
+
+            return done();
+          });
+        });
+      });
     });
 
     context('when the note does not exist', function() {

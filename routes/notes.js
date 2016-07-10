@@ -101,10 +101,11 @@ router.put('/api/v1/notes/:note', (req, res, next) => {
 
   const note_id = req.params.note;
   const message = req.body.message;
+  const liked = req.body.liked || null;
 
   return db('notes')
   .where('id', note_id)
-  .update({ message })
+  .update({ message, liked })
   .then((num_rows_updated) => {
     if (num_rows_updated < 1) {
       return res

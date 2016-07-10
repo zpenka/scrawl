@@ -50,7 +50,7 @@ describe('routes/notes', function() {
         });
       });
 
-      it('only returns 100', function(done) {
+      it('just returns 100', function(done) {
         request(app)
         .get(url)
         .expect(202)
@@ -265,6 +265,63 @@ describe('routes/notes', function() {
         request(app)
         .put(url)
         .send(body)
+        .expect(404)
+        .end(function(err, res) {
+          expect(err).to.not.exist;
+          expect(res).to.be.json;
+
+          expect(res.body).to.deep.equal({
+            message: 'ERROR: Message not found',
+          });
+
+          return done();
+        });
+      });
+    });
+  });
+
+  describe('DELETE /notes/:note', function() {
+    const base_url = '/api/v1/notes/';
+
+    context('when the note exists', function() {
+      let note = {};
+      let note_id = 0;
+      let url = '';
+
+      beforeEach(function(done) {
+        const rows = helper.generateNotesRows(1);
+
+        return helper.insertFixtures('notes', rows)
+        .then((result) => {
+          note = result;
+          note_id = note[0].id;
+          url = base_url + note_id;
+
+          return done();
+        });
+      });
+
+      it('deletes the note', function(done) {
+        request(app)
+        .delete(url)
+        .expect(202)
+        .end(function(err, res) {
+          expect(err).to.not.exist;
+          expect(res).to.be.json;
+
+          expect(res.body.message).to.equal(`Note ${note_id} deleted successfully`);
+
+          return done();
+        });
+      });
+    });
+
+    context('when the note does not exist', function() {
+      const url = base_url + 2;
+
+      it('returns an error message', function(done) {
+        request(app)
+        .delete(url)
         .expect(404)
         .end(function(err, res) {
           expect(err).to.not.exist;

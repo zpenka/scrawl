@@ -127,3 +127,28 @@ router.put('/api/v1/notes/:note', (req, res, next) => {
   .catch((err) => next(err));
 });
 
+router.delete('/api/v1/notes/:note', (req, res, next) => {
+  if (!_.isEmpty(req.query)) {
+    return res
+    .status(401)
+    .json({ message: `No parameters should be passed to the url ${req.url}` });
+  }
+
+  const note_id = req.params.note;
+
+  return db('notes')
+  .where('id', note_id)
+  .del()
+  .then((num_rows) => {
+    if (num_rows === 0) {
+      return res
+      .status(404)
+      .json({ message: 'ERROR: Message not found' });
+    }
+
+    return res
+    .status(202)
+    .json({ message: `Note ${note_id} deleted successfully` });
+  });
+});
+

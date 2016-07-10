@@ -4,6 +4,7 @@ const expect = chai.expect;
 const sinon = require('sinon');
 const Promise = require('bluebird');
 const _ = require('lodash');
+const moment = require('moment');
 
 chai.config.includeStack = true;
 chai.use(require('sinon-chai'));
@@ -61,12 +62,22 @@ module.exports.insertFixtures = (table_name, data, chunk_size = 1000) => {
   return db
   .batchInsert(table_name, data, chunk_size)
   .then(() => db.select().orderBy('id', 'desc').from(table_name))
-  .then((results) => results)
+  .then((results) => {
+    return results.map((result) => {
+      return {
+        id: result.id,
+        message: result.message,
+        liked: result.liked,
+        date_created: result.date_created.toISOString(),
+        date_updated: result.date_updated.toISOString(),
+      };
+    });
+  })
   .catch((err) => console.log('err', err));
 }
 
 module.exports.generateNotesRows = (num_rows) => {
-  const date = Date.now();
+  const date = moment().format().toString();
   let rows = [];
   let i = 0;
 

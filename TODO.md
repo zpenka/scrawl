@@ -5,8 +5,8 @@
   * no other operations allowed on all notes
 
 * GET /notes/:note returns a note by id
-* PUT /notes/:note updates a note
 * POST /notes/:note inserts a note
+* PUT /notes/:note updates a note
 * DELETE /notes/:note deletes a note
 
 * update test helper to have fixture method for less boilerplate

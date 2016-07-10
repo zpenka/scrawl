@@ -10,7 +10,6 @@ describe('routes/notes', function() {
     const url = '/api/v1/notes';
 
     context('and there are less than 100 notes', function() {
-      const date = Date.now();
       let note = {};
 
       beforeEach(function(done) {
@@ -188,4 +187,97 @@ describe('routes/notes', function() {
       });
     });
   });
+
+  describe('PUT /notes/:note', function() {
+    const base_url = '/api/v1/notes/';
+
+    context('when the note exists', function() {
+      let note = {};
+      let note_id = 0;
+      let url = '';
+
+      beforeEach(function(done) {
+        const rows = helper.generateNotesRows(1);
+
+        return helper.insertFixtures('notes', rows)
+        .then((result) => {
+          note = result;
+          note_id = note[0].id;
+          url = base_url + note_id;
+
+          return done();
+        });
+      });
+
+      context('and the request body is valid', function() {
+        it('updates the note', function(done) {
+          const now = moment().milliseconds(0).toISOString();
+          const body = { message: 'fake-new message' };
+          const expected_note = note[0];
+          expected_note.message = body.message;
+
+          request(app)
+          .put(url)
+          .send(body)
+          .expect(202)
+          .end(function(err, res) {
+            expect(err).to.not.exist;
+            expect(res).to.be.json;
+
+            expect(res.body.message).to.equal(expected_note.message);
+            expect(res.body.liked).to.equal(expected_note.liked);
+            expect(res.body.date_created).to.equal(expected_note.date_created);
+            helper.checkTimes(res.body.date_updated, now);
+
+            return done();
+          });
+        });
+      });
+
+      context('and the request body is invalid', function() {
+        it('does not update the note', function(done) {
+          const body = {};
+
+          request(app)
+          .put(url)
+          .send(body)
+          .expect(400)
+          .end(function(err, res) {
+            expect(err).to.not.exist;
+            expect(res).to.be.json;
+
+            expect(res.body).to.deep.equal({
+              message: 'ERROR: No message to PUT passed',
+            });
+
+            return done();
+          });
+        });
+      });
+    });
+
+    context('when the note does not exist', function() {
+      const url = base_url + 2;
+
+      it('returns an error message', function(done) {
+        const body = { message: 'fake-new message' };
+
+        request(app)
+        .put(url)
+        .send(body)
+        .expect(404)
+        .end(function(err, res) {
+          expect(err).to.not.exist;
+          expect(res).to.be.json;
+
+          expect(res.body).to.deep.equal({
+            message: 'ERROR: Message not found',
+          });
+
+          return done();
+        });
+      });
+    });
+  });
 });
+

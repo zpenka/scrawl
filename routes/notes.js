@@ -86,3 +86,44 @@ router.get('/api/v1/notes/:note', (req, res, next) => {
   .catch((err) => next(err));
 });
 
+router.put('/api/v1/notes/:note', (req, res, next) => {
+  if (!_.isEmpty(req.query)) {
+    return res
+    .status(401)
+    .json({ message: `No parameters should be passed to the url ${req.url}` });
+  }
+
+  if (!req.body.message) {
+    return res
+    .status(400)
+    .json({ message: 'ERROR: No message to PUT passed' });
+  }
+
+  const note_id = req.params.note;
+  const message = req.body.message;
+
+  return db('notes')
+  .where('id', note_id)
+  .update({ message })
+  .then((num_rows_updated) => {
+    if (num_rows_updated < 1) {
+      return res
+      .status(404)
+      .json({ message: 'ERROR: Message not found' });
+    }
+
+    return db
+    .select()
+    .from('notes')
+    .where('id', note_id)
+    .then((rows) => {
+      const note = rows[0];
+
+      return res
+      .status(202)
+      .json(note);
+    });
+  })
+  .catch((err) => next(err));
+});
+

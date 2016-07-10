@@ -1,9 +1,18 @@
 const router = require('./router');
 const _ = require('lodash');
 const db = require('../db/knex');
+const Logger = require('bunyan');
+
+// Instantiate Logger
+const log = new Logger({
+  name: '/api/v1/notes',
+  streams: process.env.MUTE_LOGS ? [] : [{ stream: process.stdout }]
+});
 
 router.get('/api/v1/notes', (req, res, next) => {
   if (!_.isEmpty(req.query)) {
+    log.error('service returned 401 to ', req.headers.host);
+
     return res
     .status(401)
     .json({ message: `No parameters should be passed to the url ${req.url}` });
@@ -15,6 +24,8 @@ router.get('/api/v1/notes', (req, res, next) => {
   .limit(100)
   .orderBy('id', 'desc')
   .then((result) => {
+    log.info('service returned 202 to ', req.headers.host);
+
     return res
     .status(202)
     .json(result);
@@ -24,12 +35,16 @@ router.get('/api/v1/notes', (req, res, next) => {
 
 router.post('/api/v1/notes', (req, res, next) => {
   if (!_.isEmpty(req.query)) {
+    log.error('service returned 401 to ', req.headers.host);
+
     return res
     .status(401)
     .json({ message: `No parameters should be passed to the url ${req.url}` });
   }
 
   if (!req.body.message) {
+    log.error('service returned 400 to ', req.headers.host);
+
     return res
     .status(400)
     .json({ message: 'POST body is missing required field "message"' });
@@ -49,6 +64,8 @@ router.post('/api/v1/notes', (req, res, next) => {
     return db('notes')
     .where('id', id)
     .then((rows) => {
+      log.info('service returned 202 to ', req.headers.host);
+
       const note = rows[0];
 
       return res
@@ -61,6 +78,8 @@ router.post('/api/v1/notes', (req, res, next) => {
 
 router.get('/api/v1/notes/:note', (req, res, next) => {
   if (!_.isEmpty(req.query)) {
+    log.error('service returned 401 to ', req.headers.host);
+
     return res
     .status(401)
     .json({ message: `No parameters should be passed to the url ${req.url}` });
@@ -74,10 +93,14 @@ router.get('/api/v1/notes/:note', (req, res, next) => {
   .where('id', note_id)
   .then((result) => {
     if (result.length === 0) {
+      log.error('service returned 404 to ', req.headers.host);
+
       return res
       .status(404)
       .json({ message: `Note with id ${note_id} not found` });
     }
+
+    log.info('service returned 202 to ', req.headers.host);
 
     return res
     .status(202)
@@ -88,12 +111,17 @@ router.get('/api/v1/notes/:note', (req, res, next) => {
 
 router.put('/api/v1/notes/:note', (req, res, next) => {
   if (!_.isEmpty(req.query)) {
+    log.error('service returned 401 to ', req.headers.host);
+
     return res
     .status(401)
     .json({ message: `No parameters should be passed to the url ${req.url}` });
   }
 
+
   if (!req.body.message) {
+    log.error('service returned 400 to ', req.headers.host);
+
     return res
     .status(400)
     .json({ message: 'ERROR: No message to PUT passed' });
@@ -108,6 +136,8 @@ router.put('/api/v1/notes/:note', (req, res, next) => {
   .update({ message, liked })
   .then((num_rows_updated) => {
     if (num_rows_updated < 1) {
+      log.error('service returned 404 to', req.headers.host);
+
       return res
       .status(404)
       .json({ message: 'ERROR: Message not found' });
@@ -118,6 +148,8 @@ router.put('/api/v1/notes/:note', (req, res, next) => {
     .from('notes')
     .where('id', note_id)
     .then((rows) => {
+      log.info('service returned 202 to ', req.headers.host);
+
       const note = rows[0];
 
       return res
@@ -130,6 +162,8 @@ router.put('/api/v1/notes/:note', (req, res, next) => {
 
 router.delete('/api/v1/notes/:note', (req, res, next) => {
   if (!_.isEmpty(req.query)) {
+    log.error('service returned 401 to ', req.headers.host);
+
     return res
     .status(401)
     .json({ message: `No parameters should be passed to the url ${req.url}` });
@@ -142,10 +176,14 @@ router.delete('/api/v1/notes/:note', (req, res, next) => {
   .del()
   .then((num_rows) => {
     if (num_rows === 0) {
+      log.error('service returned 404 to ', req.headers.host);
+
       return res
       .status(404)
       .json({ message: 'ERROR: Message not found' });
     }
+
+    log.info('service returned 202 to ', req.headers.host);
 
     return res
     .status(202)
@@ -155,6 +193,8 @@ router.delete('/api/v1/notes/:note', (req, res, next) => {
 
 router.put('/api/v1/notes/:note/liked', (req, res, next) => {
   if (!_.isEmpty(req.query)) {
+    log.error('service returned 401 to ', req.headers.host);
+
     return res
     .status(401)
     .json({ message: `No parameters should be passed to the url ${req.url}` });
@@ -168,6 +208,8 @@ router.put('/api/v1/notes/:note/liked', (req, res, next) => {
   .where('id', note_id)
   .then((rows) => {
     if (rows.length === 0) {
+      log.error('service returned 404 to ', req.headers.host);
+
       return res
       .status(404)
       .json({ message: 'ERROR: Message not found' });
@@ -181,10 +223,14 @@ router.put('/api/v1/notes/:note/liked', (req, res, next) => {
     .update({ liked })
     .then((num_rows_updated) => {
       if (num_rows_updated < 1) {
+        log.error('service returned 503 to ', req.headers.host);
+
         return res
         .status(503)
         .json({ message: 'ERROR: Failed to updated note' });
       }
+
+      log.info('service returned 202 to ', req.headers.host);
 
       const new_note = note;
       new_note.liked = liked;
